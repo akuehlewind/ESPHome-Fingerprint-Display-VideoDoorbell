@@ -1,0 +1,419 @@
+esphome:
+  name: fingerprint-display
+  friendly_name: fingerprint-display
+  includes:
+    - includes/doorbell-display.h
+
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+ota:
+  password: "XXXXXXXXXXXXXXXXXXXXXXesp"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+font: 
+
+  # gfonts://family[@weight]
+  - file: "gfonts://Roboto@500"
+    id: big_text
+    size: 60
+    glyphs:
+      ['&', '@', '!', ',', '.', '?', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', '/']
+
+  # gfonts://family[@weight]
+  - file: "gfonts://Roboto@400"
+    id: bar_text
+    size: 18
+    glyphs:
+      ['&', '@', '!', ',', '.', '?', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', '/']
+
+  # gfonts://family[@weight]
+  - file: "gfonts://Roboto@400"
+    id: notification_text
+    size: 25
+    glyphs:
+      ['&', '@', '!', ',', '.', '?', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', '/']       
+
+  # gfonts://family[@weight]
+  - file: "gfonts://Roboto@300"
+    id: notice_text
+    size: 16
+    glyphs:
+      ['&', '@', '!', ',', '.', '?', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', '/']     
+
+  - file: 'gfonts://Material+Symbols+Outlined@100'
+    id: materialdesign_icons_25
+    size: 25
+    glyphs: ["\U0000e0be","\U0000e82d","\U0000e002"] # mail        
+
+  - file: 'fonts/materialdesignicons-webfont.ttf' // Get them from https://github.com/Templarian/MaterialDesign-Webfont/blob/master/fonts/materialdesignicons-webfont.ttf and copy to a folder /fonts
+    id: weather_icons
+    size: 25
+    glyphs: [
+      "\U000F0590", # mdi-weather-cloudy
+      "\U000F0F2F", # mdi-weather-cloudy-alert
+      "\U000F0E6E", # mdi-weather-cloudy-arrow-right
+      "\U000F0591", # mdi-weather-fog
+      "\U000F0592", # mdi-weather-hail
+      "\U000F0F30", # mdi-weather-hazy
+      "\U000F0898", # mdi-weather-hurricane
+      "\U000F0593", # mdi-weather-lightning
+      "\U000F067E", # mdi-weather-lightning-rainy
+      "\U000F0594", # mdi-weather-night
+      "\U000F0F31", # mdi-weather-night-partly-cloudy
+      "\U000F0595", # mdi-weather-partly-cloudy
+      "\U000F0F32", # mdi-weather-partly-lightning
+      "\U000F0F33", # mdi-weather-partly-rainy
+      "\U000F0F34", # mdi-weather-partly-snowy
+      "\U000F0F35", # mdi-weather-partly-snowy-rainy
+      "\U000F0596", # mdi-weather-pouring
+      "\U000F0597", # mdi-weather-rainy
+      "\U000F0598", # mdi-weather-snowy
+      "\U000F0F36", # mdi-weather-snowy-heavy
+      "\U000F067F", # mdi-weather-snowy-rainy
+      "\U000F0599", # mdi-weather-sunny
+      "\U000F0F37", # mdi-weather-sunny-alert
+      "\U000F14E4", # mdi-weather-sunny-off
+      "\U000F059A", # mdi-weather-sunset
+      "\U000F059B", # mdi-weather-sunset-down
+      "\U000F059C", # mdi-weather-sunset-up
+      "\U000F0F38", # mdi-weather-tornado
+      "\U000F059D", # mdi-weather-windy
+      "\U000F059E" # mdi-weather-windy-variant
+      ]
+
+image:
+  - file: "images/doorbell-background-plain.jpg"
+    id: background
+    type: RGBA
+    #resize: 240x320    
+  - file: "images/doorbell-background-notification.jpg"
+    id: notification
+    type: RGBA      
+  - file: "images/doorbell-message-icon.png"
+    id: message_icon 
+    type: RGBA       
+
+color:
+  - id: notice
+    hex: "616161"
+
+text_sensor:
+  - platform: homeassistant
+    id: doorbell_text
+    entity_id: input_text.doorbell_text
+    internal: true
+    on_value:
+      then:
+        - display.page.show: !lambda |-
+            if (id(doorbell_text).state != "") {
+              return notification_page;
+            }
+            else{
+              return lockscreen_page;
+            }
+  - platform: homeassistant
+    id: doorbell_headline
+    entity_id: input_text.doorbell_headline
+    internal: true      
+  - platform: homeassistant
+    id: doorbell_subheadline
+    entity_id: input_text.doorbell_subheadline
+    internal: true
+  - platform: homeassistant
+    id: garage_door
+    entity_id: cover.garage_door
+    internal: true    
+  - platform: homeassistant
+    entity_id: weather.forecast_home
+    #attribute: forecast[0].condition
+    id: weather   
+  - platform: template
+    id: fingerprint_state
+    name: "Fingerprint State"     
+
+sensor:
+  - platform: homeassistant
+    id: garden_temperatur
+    entity_id: weather.forecast_home
+    attribute: temperature
+    internal: true
+  - platform: fingerprint_grow
+    fingerprint_count:
+      name: "Fingerprint Count"
+      id: fingerprint_count
+    last_finger_id:
+      name: "Fingerprint Last Finger ID"
+    last_confidence:
+      name: "Fingerprint Last Confidence"
+    status:
+      name: "Fingerprint Status"
+    capacity:
+      name: "Fingerprint Capacity"
+    security_level:
+      name: "Fingerprint Security Level"    
+
+binary_sensor:
+  - platform: homeassistant
+    id: alarm_trigger
+    entity_id: binary_sensor.fenster_offen    
+    internal: true
+  - platform: homeassistant
+    id: mailbox
+    entity_id: input_boolean.doorbell_display_mailbox_notification       
+    internal: true    
+
+# GPIO13 Yellow
+# GPIO15 Green
+# GPIO16 Blue
+# GND Black
+# 3V3 Red
+
+uart:
+  rx_pin: GPIO13  # Yellow
+  tx_pin: GPIO15
+  baud_rate: 57600
+
+fingerprint_grow:
+
+  sensing_pin: GPIO16
+  on_finger_scan_matched:
+    - fingerprint_grow.aura_led_control:
+        state: BREATHING
+        speed: 200
+        color: BLUE
+        count: 1
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Authorized finger"
+    - delay: 5s 
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Scan your finger"             
+  on_finger_scan_unmatched:
+    - fingerprint_grow.aura_led_control:
+        state: FLASHING
+        speed: 25
+        color: RED
+        count: 2
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Unauthorized finger"
+    - delay: 5s
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Scan your finger"        
+  on_enrollment_scan:
+    - fingerprint_grow.aura_led_control:
+        state: FLASHING
+        speed: 25
+        color: BLUE
+        count: 2
+    - fingerprint_grow.aura_led_control:
+        state: ALWAYS_ON
+        speed: 0
+        color: PURPLE
+        count: 0
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Finger scanned"    
+  on_enrollment_done:
+    - fingerprint_grow.aura_led_control:
+        state: BREATHING
+        speed: 100
+        color: BLUE
+        count: 2
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Enrolled fingerprint"
+  on_enrollment_failed:
+    - fingerprint_grow.aura_led_control:
+        state: FLASHING
+        speed: 25
+        color: RED
+        count: 4
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Failed to enroll fingerprint"
+  
+
+spi:
+  clk_pin: 18 
+  mosi_pin: 23
+  miso_pin: 19
+
+# Define a PWM output on the ESP32
+output:
+  - platform: ledc
+    pin: 4
+    id: gpio_backlight_pwm
+
+# Define a monochromatic, dimmable light for the backlight
+light:
+  - platform: monochromatic
+    output: gpio_backlight_pwm
+    name: "Power Display Backlight"
+    id: back_light
+    restore_mode: ALWAYS_ON
+
+
+# Note: library has been renamed from ili9341 to ili9xxx in ESPHome 2023.3.0. Use old name if using older version
+display:
+  - platform: ili9xxx
+    model: ILI9341
+    cs_pin: 27
+    dc_pin: 26
+    reset_pin: 5
+    rotation: 180
+    update_interval: 10s
+    color_palette: IMAGE_ADAPTIVE
+    color_palette_images:
+      - "images/doorbell-background-plain.jpg"
+      - "images/doorbell-background-notification.jpg"
+      - "images/doorbell-message-icon.png"
+    pages:      
+      - id: lockscreen_page
+        lambda: |-
+          auto displayPanel = new DisplayPanel();
+          std::map<std::uint8_t, std::string> day_map
+          {
+            {2, "Montag"},
+            {3, "Dienstag"},
+            {4, "Mittwoch"},
+            {5, "Donnerstag"},
+            {6, "Freitag"},
+            {7, "Samstag"},
+            {1, "Sonntag"}
+          };
+
+          std::map<std::uint8_t, std::string> month_map
+          {
+            {1, "Januar"},
+            {2, "Februar"},
+            {3, "März"},
+            {4, "April"},
+            {5, "Mai"},
+            {6, "Juni"},
+            {7, "Juli"},
+            {8, "August"},
+            {9, "September"},
+            {10, "Oktober"},
+            {11, "November"},
+            {12, "Dezember"}
+          };
+
+          // Check if notifiction text is empty
+          if (id(doorbell_text).state == "") {
+            it.image(0, 0, id(background));
+
+            std::string day_of_week = day_map[id(homeassistant_time).now().day_of_week];    
+            int day_of_month = id(homeassistant_time).now().day_of_month;    
+            std::string month = month_map[id(homeassistant_time).now().month];    
+            it.printf(it.get_width()/2, it.get_height()/2 - 120, id(notice_text),id(Color::WHITE), TextAlign::CENTER, "%s, %d. %s", day_of_week.c_str(),day_of_month,month.c_str());  
+            it.strftime(it.get_width()/2, it.get_height()/2 - 75, id(big_text),id(Color::WHITE), TextAlign::CENTER, "%H:%M", id(homeassistant_time).now());  
+          } 
+
+          // Bottom Bar ===================================
+          displayPanel->DrawStatusIcons(&it, id(mailbox).state, id(garage_door).state.c_str(), id(alarm_trigger).state);          
+          displayPanel->DrawWeatherIcon(&it, id(weather).state.c_str());  
+          displayPanel->DrawWeatherTemp(&it, id(garden_temperatur).state);
+      - id: notification_page
+        lambda: |-
+          auto displayPanel = new DisplayPanel();
+
+          it.image(0, 0, id(notification));
+          it.image(21, 52, id(message_icon));
+          it.print(85, 57, id(notice_text),id(Color::WHITE), TextAlign::TOP_LEFT, id(doorbell_headline).state.c_str());  
+          it.print(85, 76, id(notice_text),id(Color::WHITE), TextAlign::TOP_LEFT, id(doorbell_subheadline).state.c_str());       
+
+          std::string str = id(doorbell_text).state; 
+          // Display position and line height
+          int xPos = 27, yPos = 136, lineHeight = 30;
+
+          // Split into lines where comma is delimiter
+          std::size_t curPos = 0, commaPos = 0;
+          while ((commaPos = str.find(',', curPos)) != std::string::npos) {
+              it.print(xPos, yPos, id(notification_text),id(Color::WHITE), str.substr(curPos, commaPos - curPos).c_str());
+              yPos += lineHeight;
+              curPos = commaPos + 1;
+          }
+
+          it.printf(5, 2, id(bar_text), id(Color::WHITE), TextAlign::TOP_LEFT, "Kühlewind");
+
+          // Time upper right corner
+          it.strftime(it.get_width()-5, 2, id(bar_text),id(Color::WHITE), TextAlign::TOP_RIGHT, "%H:%M", id(homeassistant_time).now());  
+
+          // Bottom Bar ===================================
+          displayPanel->DrawStatusIcons(&it, id(mailbox).state, id(garage_door).state.c_str(), id(alarm_trigger).state);          
+          displayPanel->DrawWeatherIcon(&it, id(weather).state.c_str());  
+          displayPanel->DrawWeatherTemp(&it, id(garden_temperatur).state);
+
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "XXXXXXXXXXXXXXXXXXXXXXX"
+
+  services:
+  - service: enroll
+    variables:
+      finger_id: int
+      num_scans: int
+    then:
+      - fingerprint_grow.enroll:
+          finger_id: !lambda 'return finger_id;'
+          num_scans: !lambda 'return num_scans;'
+  - service: enroll_next 
+    variables:
+      num_scans: int
+    then:
+      - fingerprint_grow.enroll:
+          finger_id: !lambda 'return id(fingerprint_count).state;'
+          num_scans: !lambda 'return num_scans;'
+  - service: cancel_enroll
+    then:
+      - fingerprint_grow.cancel_enroll:
+  - service: delete
+    variables:
+      finger_id: int
+    then:
+      - fingerprint_grow.delete:
+          finger_id: !lambda 'return finger_id;'
+  - service: delete_all
+    then:
+      - fingerprint_grow.delete_all:         
+
+             
