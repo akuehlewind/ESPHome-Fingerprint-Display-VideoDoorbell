@@ -42,7 +42,7 @@ It integrates a Grow R503 fingerprint sensor to open a door (in my case a NUKI d
 | input_text.doorbell_text                              | text    | Notification text. Use "," to terminate each line ie. "Leave parcels,outside,"                     |
 | input_text.doorbell_headline                          | text    | Headline of notification.                                                                          |
 | input_text.doorbell_subheadline                       | text    | Sub-Headline of notification.                                                                      |
-| input_boolean.doorbell_display_mailbox_notification   | text    | Doorbell Display Mailbox Notification                                                              |
+| input_boolean.doorbell_display_mailbox_notification   | switch  | Doorbell Display Mailbox Notification                                                              |
 
 ## Connections
 Follow the connection diagram, which shows how to put everything together.
