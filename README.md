@@ -3,10 +3,10 @@
 Video doorbell (using Aqara G4) for [Home Assistant](https://www.home-assistant.io) and [ESPHome](https://www.esphome.io). 
 It integrates a Grow R503 fingerprint sensor to open a door (in my case a NUKI door lock) via HomeAssistant and additionally I added an ILI9341 display to show some status information like temperature, closed window indicator and most importantly some messages. I can set some messages in a text sensor in HomeAssistant to show them on the display, e.g. to tell the delivery person to just leave the package in the garage. The Aqara is independent of the fingerprint and the display and is only integrated into the housing to make it look nice. The Aqara G4 is simply added via Homekit.
 
-<img src="images/doorbell3.jpeg" width="20%">
-<img src="images/notification2.jpeg" width="20%">
-<img src="images/inside3.jpeg" width="20%">
-<img src="images/fusion360.jpg" width="20%">
+<img src="images/doorbell3.jpeg" width="40%">
+<img src="images/notification2.jpeg" width="40%">
+<img src="images/inside3.jpeg" width="40%">
+<img src="images/fusion360.jpg" width="40%">
 
 
 
