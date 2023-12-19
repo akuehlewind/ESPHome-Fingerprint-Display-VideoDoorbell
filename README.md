@@ -45,9 +45,9 @@ It integrates a Grow R503 fingerprint sensor to open a door (in my case a NUKI d
 | input_boolean.doorbell_display_mailbox_notification   | text    | Doorbell Display Mailbox Notification                                                              |
 
 ## Connections
-Follow the connection diagram shows how to put everything together.
+Follow the connection diagram, which shows how to put everything together.
 
-<img src="images/wiring_pin.png" width="60%">
+<img src="images/wiring_pin.png" width="80%">
 
 | Glow R5                      | PIN  ESP32   | Comment                                         |
 |------------------------------|--------------|-------------------------------------------------|
