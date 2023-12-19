@@ -77,7 +77,7 @@ See folder print to get all SLT files and the fusion360 file. Feel free to adjus
 This project is to be considered as a work in progress. 
 In my case I have a Siedle doorbell mounted outside and its not my house - so the case has some cut out on the backside that just fits perfectly over the existing Sidle doorbell.
 So I just covered the old doorbell and used the power connection from it. As doorbell I now use the Aqara G4 (Homekit) and just added the fingerprint and display for fun to enter my house and show some messages.
-Feel free to adjust and remix the 3D cover to your needs. Its a designed in Fusion 360 (see folder fusion360)
+Feel free to adjust and remix the 3D cover to your needs. Its designed in Fusion 360 (see folder fusion360)
 
 ## Other
 Example screenshot of notification
