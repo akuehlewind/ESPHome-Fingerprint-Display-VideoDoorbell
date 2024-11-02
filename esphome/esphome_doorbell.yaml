@@ -10,11 +10,11 @@ esp32:
   framework:
     type: arduino
 
-# Enable logging
 logger:
 
 ota:
-  password: "XXXXXXXXXXXXXXXXXXXXXXesp"
+  - platform: esphome  
+    password: "XXXXXXXXXXXXXXXXXXXXXX"
 
 wifi:
   ssid: !secret wifi_ssid
@@ -23,9 +23,13 @@ wifi:
 time:
   - platform: homeassistant
     id: homeassistant_time
+    on_time:
+      - seconds: 0
+        minutes: /1 # Update every minute
+        then:
+          - component.update: my_display 
 
 font: 
-
   # gfonts://family[@weight]
   - file: "gfonts://Roboto@500"
     id: big_text
@@ -77,7 +81,7 @@ font:
   - file: 'gfonts://Material+Symbols+Outlined@100'
     id: materialdesign_icons_25
     size: 25
-    glyphs: ["\U0000e0be","\U0000e82d","\U0000e002"] # mail        
+    glyphs: ["\U0000e0be","\U0000e82d","\U0000e002"]
 
   - file: 'fonts/materialdesignicons-webfont.ttf' // Get them from https://github.com/Templarian/MaterialDesign-Webfont/blob/master/fonts/materialdesignicons-webfont.ttf and copy to a folder /fonts
     id: weather_icons
@@ -149,29 +153,71 @@ text_sensor:
   - platform: homeassistant
     id: doorbell_headline
     entity_id: input_text.doorbell_headline
-    internal: true      
+    internal: true
+    on_value:
+      then:
+        - component.update: my_display      
   - platform: homeassistant
     id: doorbell_subheadline
     entity_id: input_text.doorbell_subheadline
     internal: true
+    on_value:
+      then:
+        - component.update: my_display      
   - platform: homeassistant
     id: garage_door
     entity_id: cover.garage_door
     internal: true    
+    on_value:
+      then:
+        - component.update: my_display      
   - platform: homeassistant
     entity_id: weather.forecast_home
     #attribute: forecast[0].condition
     id: weather   
+    on_value:
+      then:
+        - component.update: my_display      
   - platform: template
     id: fingerprint_state
-    name: "Fingerprint State"     
+    name: "Fingerprint State" 
+  - platform: template
+    name: "Uptime (formatted)"
+    lambda: |-
+      uint32_t dur = id(uptime_s).state;
+      int dys = 0;
+      int hrs = 0;
+      int mnts = 0;
+      if (dur > 86399) {
+        dys = trunc(dur / 86400);
+        dur = dur - (dys * 86400);
+      }
+      if (dur > 3599) {
+        hrs = trunc(dur / 3600);
+        dur = dur - (hrs * 3600);
+      }
+      if (dur > 59) {
+        mnts = trunc(dur / 60);
+        dur = dur - (mnts * 60);
+      }
+      char buffer[17];
+      sprintf(buffer, "%ud %02uh %02um %02us", dys, hrs, mnts, dur);
+      return {buffer};
+    icon: mdi:clock-start
+    update_interval: 15s        
 
 sensor:
+  - platform: wifi_signal
+    name: "Wifi Signal"
+    update_interval: 600s  
   - platform: homeassistant
     id: garden_temperatur
     entity_id: weather.forecast_home
     attribute: temperature
     internal: true
+    on_value:
+      then:
+        - component.update: my_display      
   - platform: fingerprint_grow
     fingerprint_count:
       name: "Fingerprint Count"
@@ -185,17 +231,33 @@ sensor:
     capacity:
       name: "Fingerprint Capacity"
     security_level:
-      name: "Fingerprint Security Level"    
+      name: "Fingerprint Security Level"  
+  - platform: uptime
+    name: "Uptime"
+    id: uptime_s
+    update_interval: 15s        
 
 binary_sensor:
   - platform: homeassistant
     id: alarm_trigger
     entity_id: binary_sensor.fenster_offen    
     internal: true
+    on_state:
+      then:
+        - component.update: my_display      
   - platform: homeassistant
     id: mailbox
     entity_id: input_boolean.doorbell_display_mailbox_notification       
-    internal: true    
+    internal: true  
+    on_state:
+      then:
+        - component.update: my_display      
+  - platform: status
+    name: "Doorbell Status"    
+
+switch:
+  - platform: restart
+    name: "Restart"  
 
 # GPIO13 Yellow
 # GPIO15 Green
@@ -212,18 +274,18 @@ fingerprint_grow:
 
   sensing_pin: GPIO16
   on_finger_scan_matched:
+    - text_sensor.template.publish:
+        id: fingerprint_state
+        state: "Authorized finger"
     - fingerprint_grow.aura_led_control:
         state: BREATHING
         speed: 200
         color: BLUE
-        count: 1
-    - text_sensor.template.publish:
-        id: fingerprint_state
-        state: "Authorized finger"
+        count: 1        
     - delay: 5s 
     - text_sensor.template.publish:
         id: fingerprint_state
-        state: "Scan your finger"             
+        state: "Scan your finger"          
   on_finger_scan_unmatched:
     - fingerprint_grow.aura_led_control:
         state: FLASHING
@@ -250,7 +312,7 @@ fingerprint_grow:
         count: 0
     - text_sensor.template.publish:
         id: fingerprint_state
-        state: "Finger scanned"    
+        state: "Finger scanned"
   on_enrollment_done:
     - fingerprint_grow.aura_led_control:
         state: BREATHING
@@ -300,7 +362,8 @@ display:
     dc_pin: 26
     reset_pin: 5
     rotation: 180
-    update_interval: 10s
+    invert_colors: false
+    update_interval: never
     color_palette: IMAGE_ADAPTIVE
     color_palette_images:
       - "images/doorbell-background-plain.jpg"
@@ -398,7 +461,7 @@ api:
       - fingerprint_grow.enroll:
           finger_id: !lambda 'return finger_id;'
           num_scans: !lambda 'return num_scans;'
-  - service: enroll_next 
+  - service: enroll_next
     variables:
       num_scans: int
     then:
@@ -416,6 +479,4 @@ api:
           finger_id: !lambda 'return finger_id;'
   - service: delete_all
     then:
-      - fingerprint_grow.delete_all:         
-
-             
+      - fingerprint_grow.delete_all:
