@@ -145,6 +145,7 @@ text_sensor:
             else{
               return lockscreen_page;
             }
+        - component.update: my_display
   - platform: homeassistant
     id: doorbell_headline
     entity_id: input_text.doorbell_headline
@@ -294,6 +295,7 @@ light:
 display:
   - platform: ili9xxx
     model: ILI9341
+    id: my_display
     cs_pin: 27
     dc_pin: 26
     reset_pin: 5
