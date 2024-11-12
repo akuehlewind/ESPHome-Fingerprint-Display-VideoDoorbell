@@ -32,7 +32,7 @@ It integrates a Grow R503 fingerprint sensor to open a door (in my case a NUKI d
 - Print the parts. 
 - Use a few screws to attach the display and the Aqara Mount Plate
 - Solder the connections or just use some pin connectors and WAGO connectors
-- Assemble
+- Assemble 
 
 ## HomeAssistant
 - Create some helpers in home assistant with the following types
