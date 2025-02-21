@@ -122,14 +122,17 @@ font:
 image:
   - file: "images/doorbell-background-plain.jpg"
     id: background
-    type: RGBA
+    type: RGB
+    transparency: alpha_channel
     #resize: 240x320    
   - file: "images/doorbell-background-notification.jpg"
     id: notification
-    type: RGBA      
+    type: RGB  
+    transparency: alpha_channel
   - file: "images/doorbell-message-icon.png"
     id: message_icon 
-    type: RGBA       
+    type: RGB
+    transparency: alpha_channel
 
 color:
   - id: notice
